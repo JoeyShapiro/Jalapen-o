@@ -14,6 +14,7 @@
 		CD107303298F095D00E6775A /* Jalapen_oTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD107302298F095D00E6775A /* Jalapen_oTests.swift */; };
 		CD10730D298F095D00E6775A /* Jalapen_oUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD10730C298F095D00E6775A /* Jalapen_oUITests.swift */; };
 		CD10730F298F095D00E6775A /* Jalapen_oUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD10730E298F095D00E6775A /* Jalapen_oUITestsLaunchTests.swift */; };
+		CDB35222298F13D2007E44AE /* LibJalapeño in Frameworks */ = {isa = PBXBuildFile; productRef = CDB35221298F13D2007E44AE /* LibJalapeño */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,7 +46,7 @@
 		CD107308298F095D00E6775A /* JalapeñoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "JalapeñoUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD10730C298F095D00E6775A /* Jalapen_oUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jalapen_oUITests.swift; sourceTree = "<group>"; };
 		CD10730E298F095D00E6775A /* Jalapen_oUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jalapen_oUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		CD10731C298F09CE00E6775A /* LibJalapeño */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "LibJalapeño"; path = "../LibJalapeño"; sourceTree = "<group>"; };
+		CDB35220298F13C8007E44AE /* Jalapen-o-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Jalapen-o-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDB35222298F13D2007E44AE /* LibJalapeño in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,11 +78,11 @@
 		CD1072E4298F095C00E6775A = {
 			isa = PBXGroup;
 			children = (
-				CD10731B298F09CE00E6775A /* Packages */,
 				CD1072EF298F095C00E6775A /* Jalapeño */,
 				CD107301298F095D00E6775A /* JalapeñoTests */,
 				CD10730B298F095D00E6775A /* JalapeñoUITests */,
 				CD1072EE298F095C00E6775A /* Products */,
+				CDB3521C298F134F007E44AE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -97,6 +99,7 @@
 		CD1072EF298F095C00E6775A /* Jalapeño */ = {
 			isa = PBXGroup;
 			children = (
+				CDB35220298F13C8007E44AE /* Jalapen-o-Info.plist */,
 				CD1072F0298F095C00E6775A /* Jalapen_oApp.swift */,
 				CD1072F2298F095C00E6775A /* ContentView.swift */,
 				CD1072F4298F095D00E6775A /* Assets.xcassets */,
@@ -131,12 +134,11 @@
 			path = "JalapeñoUITests";
 			sourceTree = "<group>";
 		};
-		CD10731B298F09CE00E6775A /* Packages */ = {
+		CDB3521C298F134F007E44AE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CD10731C298F09CE00E6775A /* LibJalapeño */,
 			);
-			name = Packages;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -155,6 +157,9 @@
 			dependencies = (
 			);
 			name = "Jalapeño";
+			packageProductDependencies = (
+				CDB35221298F13D2007E44AE /* LibJalapeño */,
+			);
 			productName = "Jalapeño";
 			productReference = CD1072ED298F095C00E6775A /* Jalapeño.app */;
 			productType = "com.apple.product-type.application";
@@ -434,6 +439,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Jalapen-o-Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -461,6 +467,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Jalapen-o-Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -586,6 +593,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CDB35221298F13D2007E44AE /* LibJalapeño */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "LibJalapeño";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CD1072E5298F095C00E6775A /* Project object */;
 }
