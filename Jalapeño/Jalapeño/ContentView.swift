@@ -9,15 +9,24 @@ import SwiftUI
 import LibJalapen_o
 
 struct ContentView: View {
-    @State var images: [String] = ["/Users/oniichan/Pictures/WallpaperImagesR2/anime-computer-dawn-old.jpg"]
+    // TODO if i just need image and not fs, use NSImage list
+    @State var images: [String] = ["/Users/oniichan/Pictures/WallpaperImagesR2/anime-computer-dawn-old.jpg", "/Users/oniichan/Pictures/WallpaperImagesR2/anime-computer-dawn-old.jpg"]
+    
+    @State var primary = ""
+    @State var forLight = ""
+    @State var forDark = ""
+    @State var curAzimuth: Float = 0.0
+    @State var curAltitude: Float = 0.0
+    @State var selected = 0
+    
     var body: some View {
         let test = LibJalapen_o.init()
         VStack {
             HStack {
                 ScrollView {
                     ForEach(images, id: \.self) { image in
-                        WallpaperDisplay(filePath: image, height: 200, action: {
-                            
+                        WallpaperDisplay(filePath: image, height: 200, highlight: selected == 0, action: {
+                            selected = 0
                         })
                     }
                     WallpaperSystem(systemName: "plus", height: 200, action: {
@@ -27,6 +36,31 @@ struct ContentView: View {
                 .padding()
                 Spacer()
                 VStack {
+                    Picker("Primary", selection: $forLight) {
+                        ForEach(images, id: \.self) { image in
+                            Text(image)
+                        }
+                    }
+                    Picker("For Light", selection: $forLight) {
+                        ForEach(images, id: \.self) { image in
+                            Text(image)
+                        }
+                    }
+                    Picker("For Dark", selection: $forDark) {
+                        ForEach(images, id: \.self) { image in
+                            Text(image)
+                        }
+                    }
+                    Divider()
+                        .padding()
+                    HStack {
+                        Text("Azimuth")
+                        TextField("Azimuth", value: $curAzimuth, format: .number)
+                            .textFieldStyle(.roundedBorder) // TODO if blank, dont print text
+                        Text("Altitude")
+                        TextField("Alititude", value: $curAltitude, format: .number)
+                            .textFieldStyle(.roundedBorder)
+                    }
                     Image(systemName: "globe")
                         .imageScale(.large)
                         .foregroundColor(.accentColor)
@@ -44,7 +78,7 @@ struct ContentView: View {
                         let possibleImages: [String] = panel.urls.map({ f in
                             let possibleImage = NSImage(contentsOf: f) ?? NSImage()
                             if possibleImage.isValid {
-                                return f.absoluteString
+                                return f.path
                             } else {
                                 return ""
                             }
@@ -57,6 +91,11 @@ struct ContentView: View {
                 }
                 .padding(5)
                 Spacer()
+                Button {
+                    print("saved")
+                } label: {
+                    Image(systemName: "square.and.arrow.down")
+                }
                 Text("Hello")
             }
         }
@@ -66,6 +105,7 @@ struct ContentView: View {
 struct WallpaperDisplay: View {
     var filePath: String
     var height: CGFloat
+    var highlight: Bool
     var action: () -> Void
     
     var body: some View {
@@ -75,7 +115,9 @@ struct WallpaperDisplay: View {
             .aspectRatio(contentMode: .fill)
             .frame(width: height * 1.333, height: height)
             .clipped()
+            .border(Color.accentColor.opacity(0.8), width: 5)
             .cornerRadius(10)
+            .help(filePath)
             .onTapGesture {
                 action()
             }
@@ -89,6 +131,7 @@ struct WallpaperSystem: View {
     
     var body: some View {
         Image(systemName: systemName)
+            .imageScale(.large)
             .frame(width: height * 1.333, height: height)
             .clipped()
             .cornerRadius(10)
