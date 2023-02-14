@@ -7,6 +7,7 @@
 
 import SwiftUI
 import LibJalapen_o
+import AVFoundation
 
 struct WallpaperImage: Hashable {
     let id: UUID
@@ -20,33 +21,103 @@ struct WallpaperImage: Hashable {
         name = filePath
         image = NSImage(contentsOfFile: filePath) ?? NSImage(systemSymbolName: "square.and.arrow.up.trianglebadge.exclamationmark", accessibilityDescription: nil)!
     }
+    
+    public func getCG() -> CGImage {
+        return self.image.cgImage(forProposedRect: nil, context: nil, hints: nil)!
+    }
+}
+
+struct WallpaperDynamic {
+    var primary: UUID
+    var forLight: UUID
+    var forDark: UUID
+    var images: [WallpaperImage]
+    
+    public init() {
+        primary = UUID()
+        forLight = UUID()
+        forDark = UUID()
+        images = []
+        
+        let _ = self.append(filePath: "/Users/oniichan/Pictures/WallpaperImagesR2/anime-computer-dawn-old.jpg")
+        _ = self.append(filePath: "/Users/oniichan/Pictures/WallpaperImagesR2/anime-computer-dawn-old.jpg")
+        _ = self.append(filePath: "garbage")
+    }
+    
+    public mutating func append(filePath: String) -> UUID {
+        let image = WallpaperImage(filePath: filePath)
+        self.images.append(image)
+        
+        return image.id
+    }
+    
+    public mutating func remove(id: UUID) {
+        self.images.removeAll(where: { $0.id == id }) // should only be one
+        
+        // remove the image from any settings
+        if primary == id {
+            primary = UUID()
+        }
+        if forLight == id {
+            forLight = UUID()
+        }
+        if forDark == id {
+            forDark = UUID()
+        }
+    }
+    
+    public func getPrimary() -> WallpaperImage {
+        return self.images.first(where: { $0.id == primary })!
+    }
+    
+    public func getForLight() -> WallpaperImage {
+        return self.images.first(where: { $0.id == forLight })!
+    }
+    
+    public func getForDark() -> WallpaperImage {
+        return self.images.first(where: { $0.id == forDark })!
+    }
+}
+
+func create(wallpaper: WallpaperDynamic) {
+    print(kCGImagePropertyExifUserComment)
+    let data = NSMutableData()
+    if let dst = CGImageDestinationCreateWithData(data, AVFileType.heic as CFString, wallpaper.images.count, nil) {
+        CGImageDestinationAddImageAndMetadata(dst, wallpaper.images[0].getCG(), nil, nil)
+        for i in 1...wallpaper.images.count {
+            CGImageDestinationAddImage(dst, wallpaper.images[i].getCG(), nil)
+        }
+    }
+    
+    do {
+        let out = URL(filePath: "test.heic")
+        try (data as Data).write(to: out)
+        print(out)
+    } catch {
+        print(error)
+    }
 }
 
 struct ContentView: View {
     // it doesnt seem we need the path ever again. thank god, saves validating
-    @State var images: [WallpaperImage] = [ WallpaperImage(filePath: "/Users/oniichan/Pictures/WallpaperImagesR2/anime-computer-dawn-old.jpg"), WallpaperImage(filePath: "/Users/oniichan/Pictures/WallpaperImagesR2/anime-computer-dawn-old.jpg"), WallpaperImage(filePath: "garbage")
-    ]
-    
-    @State var primary = ""
-    @State var forLight = ""
-    @State var forDark = ""
-    @State var curAzimuth: Float = 0.0
-    @State var curAltitude: Float = 0.0
     @State var selected = UUID()
     @State var curImage = WallpaperImage(filePath: "")
+    @State var dynamicWallpaper = WallpaperDynamic()
     
     var body: some View {
         let test = LibJalapen_o.init()
+        
         VStack {
             HStack {
                 ScrollView {
-                    ForEach(images, id: \.self) { image in
+                    ForEach(dynamicWallpaper.images, id: \.self) { image in
                         WallpaperDisplay(wallpaperImage: image, height: 200, highlight: selected == image.id, action: {
-                            
+                            if let i = dynamicWallpaper.images.firstIndex(where: { selected == $0.id }) {
+                                dynamicWallpaper.images[i] = curImage
+                            }
                             
                             selected = image.id
-                            curAzimuth = image.azimuth // TODO i dont think these update. also use an object
-                            curAltitude = image.altitude
+                            curImage = image
                         })
                     }
                     WallpaperSystem(systemName: "plus", height: 200, action: {
@@ -56,19 +127,19 @@ struct ContentView: View {
                 .padding()
                 Spacer()
                 VStack {
-                    Picker("Primary", selection: $forLight) {
-                        ForEach(images, id: \.self) { image in
-                            Text(image.name)
+                    Picker("Primary", selection: $dynamicWallpaper.primary) {
+                        ForEach(dynamicWallpaper.images, id: \.self) { image in
+                            Text(image.name).tag(image.id)
                         }
                     }
-                    Picker("For Light", selection: $forLight) {
-                        ForEach(images, id: \.self) { image in
-                            Text(image.name)
+                    Picker("For Light", selection: $dynamicWallpaper.forLight) {
+                        ForEach(dynamicWallpaper.images, id: \.self) { image in
+                            Text(image.name).tag(image.id)
                         }
                     }
-                    Picker("For Dark", selection: $forDark) {
-                        ForEach(images, id: \.self) { image in
-                            Text(image.name)
+                    Picker("For Dark", selection: $dynamicWallpaper.forDark) {
+                        ForEach(dynamicWallpaper.images, id: \.self) { image in
+                            Text(image.name).tag(image.id)
                         }
                     }
                     Divider()
@@ -78,7 +149,7 @@ struct ContentView: View {
                         TextField("Azimuth", value: $curImage.azimuth, format: .number)
                             .textFieldStyle(.roundedBorder) // TODO if blank, dont print text
                         Text("Altitude")
-                        TextField("Alititude", value: $curAltitude, format: .number)
+                        TextField("Alititude", value: $curImage.altitude, format: .number)
                             .textFieldStyle(.roundedBorder)
                     }
                     Image(systemName: "globe")
@@ -104,7 +175,7 @@ struct ContentView: View {
                             }
                         })
                         let realImages: [String] = possibleImages.filter({ f in return f != ""})
-                        images.append(contentsOf: realImages.map({ f in return WallpaperImage(filePath: f) })) // TODO super inefficient
+                        dynamicWallpaper.images.append(contentsOf: realImages.map({ f in return WallpaperImage(filePath: f) })) // TODO super inefficient
                     }
                 } label: {
                     Image(systemName: "plus")
@@ -112,6 +183,7 @@ struct ContentView: View {
                 .padding(5)
                 Spacer()
                 Button {
+                    create(wallpaper: dynamicWallpaper)
                     print("saved")
                 } label: {
                     Image(systemName: "square.and.arrow.down")
